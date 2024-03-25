@@ -1,0 +1,189 @@
+---
+title: "A2 Análise Exploratória de Dados e Visualização"
+author: "Ana Júlia Amaro Pereira Rocha e Maria Eduarda Mesquita Magalhães"
+output: html_document
+---
+
+## PARTE A : Formulação e documentação da ideia 
+
+### Escolha da Base de Dados
+
+#### Inicialmente, a ideia era encontrar uma base de dados sobre as lindas praias do Ceará(estado da Eduarda),
+#### mas não encontramos nenhum dado que fosse "bom" o suficiente para desenvolver esse trabalho. Então, 
+#### acabamos por ir para um assunto mais "pesado", ao encontrar a base que estamos usando agora.
+#### Os dados utilizados são sobre homicídios no Brasil, contendo informações tanto do panorama geral do país 
+#### quanto de suas 5 regiões e de seus estados separadamente. A base de dados foi encontrada em um documento 
+#### online do IPECE(Instituto de Pesquisa e Estratégia Econômica do Ceará), o qual diz que a fonte dos dados 
+#### é "DATASUS, Mapa da Violência-2014". Essa base foi escolhida porque diz respeito a um assunto preocupante
+#### e que nos depertou curiosidade ao saber os dados disso no Ceará e em Minas Gerais, estados de onde nós,
+#### as quais elaboramos esse trabalho, viemos.
+#### A base escolhida é simples e seus dados são referentes aos anos de 2001 até 2012. Veja-a, logo abaixo:
+
+```{r, out.width = "5000px", out.height = "1000px"}
+library(knitr)
+knitr::include_graphics("Base_de_dados_A2_AEDV.png")
+```
+
+### Formulação explícita da hipótese a ser respondida a partir dos Dados
+
+#### O intuito da análise dos dados é, principalmente, comparar a estatística do Brasil com a de MG e do CE. Além
+#### de perceber possíveis relações com as estatísticas de cada uma das 5 macroregiões do país, ao analisar estas
+#### "lado a lado", no gráfico de barras presente em nossa peça gráfica final.
+#### Logo, as hipóteses seriam:
+#### 1. A situação de qual dos dois estados mais se assemelha à do Brasil, em geral, no assunto em questão?
+#### 2. Qual região possui a maior média de casos? 
+#### 3. Qual dos dois estados teve maior variação ao longo dos anos?
+
+### Referências visuais e rascunhos do que gostaria de executar
+
+#### Abaixo estão algumas imagens referentes ao processo de construção da peça final. A intenção sempre foi
+#### representar os dados de forma pertinente e fazer uma peça gráfica que lembra-se homicídio de forma bem
+#### expressiva.
+
+#### A princípio, foi feito um gráfico de linhas bem simples comparando os dados do Brasil, com os do Ceará e 
+#### de Minas Gerais, nossos estados.
+
+```{r, out.width="1000px", out.height="500px"}
+library(knitr)
+knitr::include_graphics("AEDV-A2-imagem_1.jpeg")
+```
+
+#### A seguir, tentou-se observar cada dado mais "concretamente" de certa forma, colocando bolinhas em cada 
+#### vértice das linhas, os quais representam os dados de cada ano.
+
+```{r, out.width="1000px", out.height="500px"}
+knitr::include_graphics("AEDV-A2-imagem_2.jpeg")
+```
+
+#### Decidiu-se, portanto, que o gráfico principal seria o criado anteriormente. Então, começa-se a parte mais 
+#### editorial. Em um primeiro caso, temos o teste de colocar o gráfico em um fundo preto e um "boneco" ao
+#### lado, com o objetivo de lembrar uma vítima caída no local do homicídio.
+
+```{r, out.width="1000px", out.height="500px"}
+knitr::include_graphics("AEDV-A2-imagem_3.jpeg")
+```
+
+#### Posteriormente, tenta-se usar algo que dê "título" e destaque à peça. Nesse caso, uma faixa em amarelo com 
+#### a frase "Cena de Crime Não Utrapasse", dando o ênfase procurado para o assunto da peça.
+
+```{r, out.width="1000px", out.height="500px"}
+knitr::include_graphics("AEDV-A2-imagem_4.jpeg")
+```
+
+#### Para melhor visualização do gráfico, foram feitos alguns ajustes. A começar pela borda das linhas que 
+#### ficou mais grossa e a tonalidade das cores também ficou mais forte e visível. Além disso, a legenda 
+#### teve algumas alterações de modo que ficasse mais simples e objetiva.
+
+```{r, out.width="1000px", out.height="500px"}
+knitr::include_graphics("AEDV-A2-imagem_5.jpeg")
+```
+
+#### O outro gráfico que gostaríamos de colocar para melhor aproveitar tantos dados presentes na base e também
+#### fornecer um panorama um pouco mais geral da situação em todo o país é o de barras, feito como mostra a
+#### imagem a seguir. No entanto, a dúvida era quanto à sua cor e/ou demais itens colocados sobre ele. No 
+#### esboço a seguir, tem-se uma das formas que pensamos em representar esse gráfico, isto é, sendo suas
+#### barras pretas com algumas manchas de vermelho indicando manchas de sangue escorrendo do boneco. 
+
+```{r, out.width="1000px", out.height="500px"}
+knitr::include_graphics("AEDV-A2-imagem_6.jpeg")
+```
+
+#### Na imagem abaixo temos outra forma que poderia representar esse gráfico de barras, sendo agora suas colunas
+#### vermelhas, o que parece ter dado também um destaque para o gráfico. No entanto, só ao final da documentação
+#### apresentaremos qual representação foi escolhida e com algumas modificações finais também.
+
+```{r, out.width="1000px", out.height="500px"}
+knitr::include_graphics("AEDV-A2-imagem_7.jpeg")
+```
+
+
+## PARTE B : Análise Exploratória da base de dados
+
+### No estilo do que foi feito para a A1
+
+#### Para essa análise, foi feito o gráfico abaixo para melhor visualização dos dados. Nele, constam-se médias 
+#### de cada região a cada ano num gráfico de linhas, haja vista que este é ideal para representar informações  
+#### ao longo do tempo. Além de haver também, máximos, mínimos, médias e quartis dos dados referentes aos 
+#### estados, em forma de boxplots.
+#### Os dados usados para fazer esse gráficos estão em planilhas do excel as quais estão disponibilizadas na 
+#### mesma pasta desse arquivo. No entanto, a planilha que está maisa "arrumada" e agradável para a leitura é
+#### a "AEDV-A2-dados_para_analise", os outros arquivos em excel estão na pasta apenas para o R ler e usar 
+#### para plotar os gráficos no arquivo "tentativa1_oficial". Logo, todos os dados usados nos códigos teste 
+#### estão em um único arquivo, feito para análise, "AEDV-A2-dados_para_analise".
+
+```{r, out.width = "5000px", out.height = "600px"}
+library(knitr)
+knitr::include_graphics("AEDV--A2--analise_dados.jpeg")
+```
+
+### Confirmação ou eventual reformulação da hipótese
+
+#### A partir da análise acima, pode-se perceber que algumas hipóteses já foram respondidas. 
+#### A hipótese 2, por exemplo, diz respeito a qual estado possui a maior média de casos e como acima deixa-se 
+#### claro, a região "procurada" que responda a essa questão é a sudeste, onde fica, inclusive, um dos dois 
+#### estados que estamos dandos mais atenção, MG, infelizmente.
+#### A pergunta 3, pode ser respondida com base nos boxplots. Se compararmos apenas o do Ceará com o de Minas 
+#### Gerais, pode-se perceber pelas medidas do boxplots que ambos variaram quase que na mesma proporção. Ainda 
+#### assim o Ceará tem dados um tanto maiores, já que seus dados estão representados um pouco mais à direita do
+#### que os de MG.
+#### Já a hipótese 1, poderá ser analisada na peça gráfica final, a qual possui dados do Ceará, de Minas e do 
+#### Brasil em geral num único gráfico de linhas.
+
+## PARTE C : Pensamento Editorial
+
+### Definição do Público Alvo
+
+#### Nossa peça gráfica possui gráficos de entendimento simples (barras e linhas) justamente porque o intuito
+#### é que todos consigam entender, ou seja, o material produzido é para o público em geral. Além disso, o tema 
+#### mais dramático visa despertar o senso emocional e crítico ao mesmo tempo, até das pessoas mais leigas em 
+#### análise de dados, de modo que qualquer um consiga entender do que estamos tratando já na primeira observação.
+
+### Definição da qualidade expressiva da peça de comunicação (neutra, dramática, etc.)
+
+#### Qualidades expressivas da nossa peça: dramática, racional, lógica, expressiva, subjetiva e ao mesmo tempo
+#### clara.
+
+### Escolha da solução de representação do dado, anotações, cores e composição
+
+#### Por se tratar de um assunto "pesado" que precisa ser pensado, estudado e melhor prevenido, acreditamos
+#### ser conveninete e importante chamar a atenção do público ao tema dos dados já em uma primeira observação.
+#### Por isso, a peça gráfica já começa com uma faixa amarela na qual consta uma mensagem de atenção "cena de 
+#### crime não ultrapasse", com referência àquelas faixas que colocam ao redor do local dos crimes para que a
+#### polícia possa fazer a investigação necessária.
+#### Além disso, outro elemento colocado com o intuito de lembrar uma cena de homicídio foi um "boneco" como
+#### aqueles desenhados no local que a polícia encontra a vítima morta, e as manchas de sangue postas sobre o 
+#### boneco são para reforçar o contexto dramático da peça.
+#### A paleta de cores utilizada também foi escolhida a fim de chamar a atenção para uma cena de crime. 
+#### Abaixo, está disponibilizada a paleta da peça gráfica final:
+
+```{r, out.width = "5000px", out.height = "200px"}
+library(knitr)
+knitr::include_graphics("paleta-peca-final-A2.jpeg")
+```
+
+### Definição das ferramentas e recursos de execução
+
+#### As bibliotecas usadas para fazer os gráficos são tidyverse(principalmente ggplot2) e dplyr. Também usamos
+#### as bibliotecas readr e readxl para conseguir usar dados de alguns arquivos em excel e csv.
+#### Na mesma pasta desse arquivo está disponibilizado um arquivo em R chamado "tentativa_1_oficial", o qual 
+#### contém códigos teste e outros usados para plotar os gráficos usados.
+
+## Parte E : Apresentação da peça gráfica
+
+#### Segue abaixo, a Peça Gráfica Final. Também disponibilizamos a peça de Análise Exploratória novamente, com 
+#### o intuito de que essa seja analisada também, mas por pessoas que entendam um pouco mais de análise de
+#### dados e não com o foco no público em geral. Seria como uma peça alternativa.
+
+```{r, out.width = "5000px", out.height = "500px"}
+library(knitr)
+knitr::include_graphics("AEDV-A2-peca-final.jpg")
+```
+
+```{r, out.width = "5000px", out.height = "600px"}
+library(knitr)
+knitr::include_graphics("AEDV--A2--analise_dados.jpeg")
+```
+
+
+
+ 

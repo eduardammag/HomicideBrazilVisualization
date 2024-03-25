@@ -1,0 +1,199 @@
+---
+title: "Análise de dados com R"
+author: "Eduarda Mesquita"
+date: "2023-06-05"
+output: html_document
+---
+
+### Carregando bibliotecas necessárias
+
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+library(readr)
+library(readxl)
+library(dplyr)
+library(tidyverse)
+```
+
+### Criando variáveis as quais representam os arquivos csv do excel que contêm os
+### dados necessários para plotar os gráficos a seguir
+
+```{r message=FALSE, warning=FALSE}
+dados_estados <- read_excel("dados_estados.csv")
+dados_ce_mg <- read_excel("dados_ce_mg.csv")
+dados_regiao <- read_excel("dados_regiao.csv")
+dados_estados_regiao <- read_excel("dados_estados_regiao.csv")
+resumo <- read_excel("medidas_resumo.csv")
+```
+
+### Tentativa de representar os dados dos estados usando facet_wrap (não foi uma boa escolha) 
+
+```{r message=FALSE, warning=FALSE}
+
+# Criação do gráfico principal
+p <- ggplot(data = dados_estados_regiao, aes(x = ano, y = taxa, color = estado)) +
+  geom_line(size = 2) +
+  scale_x_discrete() +
+  scale_y_continuous(breaks = seq(0, 100, 10)) +
+  facet_wrap(~ regiao, scales = "free_x") +
+  theme(legend.position = "bottom",
+        axis.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12, face = "bold"))
+p 
+# Salva o gráfico
+ggsave("facetwrap.png", p, limitsize = FALSE, dpi = 300)
+
+
+```
+
+### Tentativa de representar as taxas de cada estado por meio de um gráfico de linhas
+
+```{r message=FALSE, warning=FALSE}
+ggplot(dados_estados, aes(x = as.character(ano), y = taxa, color = regiao, group = regiao)) +
+  geom_line(size = 1.0) + geom_point(size = 3) +
+  labs(x = "Anos", y = "Taxa (%)", title = "Taxa de homicídios por 100 mil habitantes", color = "Região") +
+  scale_x_discrete() + scale_y_continuous(breaks = seq(0, 100, 10)) +
+  theme(
+    plot.margin = margin(0.01, 0.01, 0.01, 0.04, "cm"),
+    plot.title = element_text(hjust = 0.5, size = 10, family = "Arial", face = "bold", color = "#D9CB04"),
+    plot.background = element_rect(fill = "black"),
+    axis.title = element_text(hjust = 0.5, size = 5, family = "Arial", face = "bold", color = "#D9CB04"),
+    axis.text.y = element_text(size = 5, family = "Arial", face = "bold", color = "#D9CB04"),
+    axis.title.y = element_text(size = 5, family = "Arial", face = "bold", color= "#D9CB04"),
+    axis.text.x = element_text(size = 5, family = "Arial", face = "bold", color = "#D9CB04"),
+    legend.position = "right",
+    legend.title = element_text(size = 7, family = "Arial"),
+    legend.text = element_text(size = 7, family = "Arial"),
+    legend.background = element_rect(fill = "#E7ECE6"),
+    legend.key.size = unit(0.1, "mm")
+  )
+
+```
+
+# GRÁFICO DE LINHAS POR REGIÃO
+
+```{r message=FALSE, warning=FALSE}
+dados_regiao$taxa <- as.numeric(dados_regiao$taxa)
+
+ggplot(dados_regiao, aes(x = as.character(ano), y = taxa, color = regiao, group = regiao)) +
+  geom_line(size = 1.0) + geom_point(size = 3) +
+  labs(x = "Anos", y = "Taxa (%)", title = "Comparação entre as Regiões Brasileiras", color = "Região") +
+  scale_color_manual(values = c("red", "yellow", "purple", "blue", "#31695C")) +
+  scale_x_discrete() + scale_y_continuous(breaks = seq(0, 100, 10)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 20, family = "Arial", face = "bold", color = "black"),
+    plot.background = element_rect(fill = "#D1B48C"),
+    axis.title = element_text(hjust = 0.5, size = 15, family = "Arial", face = "bold", color = "black"),
+    axis.text.y = element_text(size = 20, family = "Arial", face = "bold", color = "black"),
+    axis.title.y = element_text(size = 15, family = "Arial", face = "bold", color = "black"),
+    axis.text.x = element_text(size = 10, family = "Arial", face = "bold", color = "black"),
+    legend.position = "bottom",  # Posiciona a legenda abaixo do gráfico
+    legend.title = element_blank(),  # Remove o título da legenda
+    legend.text = element_text(size = 12, family = "Arial"),
+    legend.background = element_rect(fill = "#E7ECE6"),
+    legend.key.size = unit(10, "mm")
+  )
+
+ggsave(filename = "grafico_linha_regioes.png")
+
+
+```
+
+
+# GRÁFICO BOX PLOT POR ESTADO
+
+```{r message=FALSE, warning=FALSE}
+dados_filtrados <- dados_estados %>%
+  filter(regiao != "BRASIL")
+
+ggplot(dados_filtrados, aes(x = regiao, y = taxa, fill = regiao)) +
+  geom_boxplot(size = 0.5, alpha = 0.8) +
+  labs(title = "Taxa de homicídio por 100 mil habitantes", x = "", y = "") +
+  coord_flip() +
+  guides(fill = FALSE) +
+  theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, color = "black", face = "bold"),
+        plot.background = element_rect(fill = "#D1B48C"))
+
+ggsave(filename = "boxplot5.png")
+
+
+```
+
+# GRÁFICO BOX PLOT POR REGIÃO
+
+```{r message=FALSE, warning=FALSE}
+ggplot(dados_regiao, aes(x = regiao, y = taxa, fill = regiao)) +
+  geom_boxplot(size = 0.5, alpha = 0.8) +
+  labs(title = "Taxa de homicídio por 100 mil habitantes", x = "", y = "Taxa(%)") + 
+  theme(
+    plot.background = element_rect(fill = "#D1B48C"),
+    plot.title = element_text(hjust = 0.5, size = 20, family = "Arial", face = "bold", color = "black", margin = margin(20, 0, 20, 0)),  # Ajusta o tamanho do título e adiciona margem superior
+    axis.title.x = element_text(size = 12, family = "Arial", face = "bold", color = "black"),
+    axis.title.y = element_text(size = 12, family = "Arial", face = "bold", color = "black"),
+    axis.text = element_text(size = 12, family = "Arial", face = "bold", color = "black"),
+    legend.position = "none"
+  ) +
+  coord_flip()
+
+ggsave(filename = "boxplot.png")
+```
+
+# GRÁFICO DE LINHAS MG, CE E BRASIL
+
+```{r message=FALSE, warning=FALSE}
+dados_ce_mg$taxa <- as.numeric(dados_ce_mg$taxa)
+
+ggplot(dados_ce_mg, aes(x = as.character(ano), y = taxa, color = regiao, group = regiao)) +
+  geom_line(size = 1.0) + geom_point(size = 3) +
+  labs(x = "Anos", y = "Taxa (%)", title = "Taxa de homicídios por 100 mil habitantes", color = "Região") +
+  scale_x_discrete() + scale_y_continuous(breaks = seq(0, 100, 10)) +
+  scale_color_manual(values = c("#DA2A41", "#010727", "#0455BF")) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 20, family = "Arial", face = "bold", color = "#D9CB04"),
+    plot.background = element_rect(fill = "black"),
+    axis.title = element_text(hjust = 0.5, size = 15, family = "Arial", face = "bold", color = "#D9CB04"),
+    axis.text.y = element_text(size = 20, family = "Arial", face = "bold", color = "#D9CB04"),
+    axis.title.y = element_text(size = 15, family = "Arial", face = "bold", color= "#D9CB04"),
+    axis.text.x = element_text(size = 10, family = "Arial", face = "bold", color = "#D9CB04"),
+    legend.position = c(0.1, 0.75),
+    legend.title = element_text(size = 7, family = "Arial"),
+    legend.text = element_text(size = 7, family = "Arial"),
+    legend.background = element_rect(fill = "#E7ECE6"),
+    legend.key.size = unit(10, "mm")
+  )
+ggsave(filename = "grafico_linha.png")
+```
+
+# GRÁFICO DE BARRAS DA MÉDIA POR REGIÃO
+
+```{r message=FALSE, warning=FALSE}
+
+dados <- data.frame(
+  regiao = c("Norte", "Nordeste", "Sudeste", "Sul", "Centro-Oeste"),
+  media = c(27.200000, 28.525000, 29.216667, 26.916667, 21.408333)
+)
+
+ggplot(dados, aes(x = regiao, y = media)) +
+geom_bar(stat = "identity", fill = "#BF0413") +
+labs(x = "Região", y = "Média", title = "Média da Taxa de homicídios por Região") +
+theme(
+    plot.title = element_text(hjust = 0.5, size = 20, family = "Arial", face = "bold", color = "#D9CB04"),
+    plot.background = element_rect(fill = "black"),
+    axis.title = element_text(hjust = 0.5, size = 15, family = "Arial", face = "bold", color = "#D9CB04"),
+    axis.text.y = element_text(size = 20, family = "Arial", face = "bold", color = "#D9CB04"),
+    axis.title.y = element_text(size = 10, family = "Arial", face = "bold", color= "#D9CB04"),
+    axis.text.x = element_text(size = 15, family = "Arial", face = "bold", color = "#D9CB04"),
+    legend.position = c(0.1, 0.75),
+    legend.title = element_text(size = 7, family = "Arial"),
+    legend.text = element_text(size = 7, family = "Arial"),
+    legend.background = element_rect(fill = "#E7ECE6"),
+    legend.key.size = unit(10, "mm")
+  )
+ggsave(filename = "grafico_media_vermeho.png")
+
+```
+
+
